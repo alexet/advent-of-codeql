@@ -1,0 +1,6 @@
+---
+library: false
+warnOnImplicitThis: false
+name: alexet/advent-of-code
+version: 1.0.0
+dataExtensions: "2024/**/*.yml"
