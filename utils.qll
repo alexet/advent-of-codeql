@@ -12,5 +12,8 @@ module Helpers<inputSig/1 input> {
         j = 1 and result = line(i)
         or
         j > 1 and result = leftover(i, j - 1).regexpCapture("(\\S+)\\s+(\\S+)", 2)
-    } 
+    }
+
+    int grid(int i, int j) { result = line(i).splitAt(" ", j).toInt() }
+
 }
