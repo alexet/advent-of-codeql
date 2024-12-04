@@ -1,15 +1,14 @@
-extensible predicate testDay3(string data);
-
-extensible predicate realDay3(string data);
-
+import input
 import utils
 
-module Impl<inputSig/1 input> {
-  import Helpers<input/1>
+string testData() { result = testData(2024, 3) }
 
-  string findMul(int i) {
-    exists(string s | input(s) | result = s.regexpFind("mul\\(\\d+,\\d+\\)", i, _))
-  }
+string realData() { result = realData(2024, 3) }
+
+module Impl<inputSig/0 input> {
+  import Helpers<input/0>
+
+  string findMul(int i) { result = input().regexpFind("mul\\(\\d+,\\d+\\)", i, _) }
 
   int mulSides(int i, int j) {
     result = findMul(i).regexpCapture("mul\\((\\d+),(\\d+)\\)", j).toInt()
@@ -20,9 +19,7 @@ module Impl<inputSig/1 input> {
   int total() { result = sum(int i | | mulResult(i)) }
 
   string findInst(int i) {
-    exists(string s | input(s) |
-      result = s.regexpFind("(mul\\(\\d+,\\d+\\)|do\\(\\)|don't\\(\\))", i, _)
-    )
+    result = input().regexpFind("(mul\\(\\d+,\\d+\\)|do\\(\\)|don't\\(\\))", i, _)
   }
 
   predicate isEnabled(int i) {
@@ -40,13 +37,11 @@ module Impl<inputSig/1 input> {
 
   int enabledMulResult(int i) { result = enabledMulSides(i, 1) * enabledMulSides(i, 2) }
 
-
   int total2() { result = sum(int i | | enabledMulResult(i)) }
-
 }
 
-module TestImpl = Impl<testDay3/1>;
+module TestImpl = Impl<testData/0>;
 
-module RealImpl = Impl<realDay3/1>;
+module RealImpl = Impl<realData/0>;
 
 select 1

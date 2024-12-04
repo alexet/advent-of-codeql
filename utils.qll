@@ -1,7 +1,7 @@
-signature predicate inputSig(string s);
+signature string inputSig();
 
-module Helpers<inputSig/1 input> {
-  string line(int i) { exists(string input | input(input) | result = input.splitAt("\n", i)) }
+module Helpers<inputSig/0 input> {
+  string line(int i) { result = input().splitAt("\n", i) }
 
   string part(int i, int j) { result = leftover(i, j).regexpCapture("(\\d+)(|\\s.*)", 1) }
 

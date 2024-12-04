@@ -1,11 +1,17 @@
-extensible predicate testDay1(string data);
-
-extensible predicate realDay1(string data);
-
+import input
 import utils
 
-module Impl<inputSig/1 input> {
-  import Helpers<input/1>
+string testData() { result = testData(2024, 1) }
+
+string realData() { result = realData(2024, 1) }
+
+module TestImpl = Impl<testData/0>;
+
+module RealImpl = Impl<realData/0>;
+
+module Impl<inputSig/0 input> {
+  import Helpers<input/0>
+
 
   int lhs(int i) { result = part(i, 1).toInt() }
 
@@ -25,10 +31,4 @@ module Impl<inputSig/1 input> {
   int crossOccurFactor() { result = sum(int i | | lhs(i) * rhsOccurs(lhs(i))) }
 }
 
-module TestImpl = Impl<testDay1/1>;
-
-module RealImpl = Impl<realDay1/1>;
-
-from string s
-where testDay1(s)
-select s
+select 1

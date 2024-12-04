@@ -1,11 +1,16 @@
-extensible predicate testDay2(string data);
-
-extensible predicate realDay2(string data);
-
+import input
 import utils
 
-module Impl<inputSig/1 input> {
-  import Helpers<input/1>
+string testData() { result = testData(2024, 2) }
+
+string realData() { result = realData(2024, 2) }
+
+module TestImpl = Impl<testData/0>;
+
+module RealImpl = Impl<realData/0>;
+
+module Impl<inputSig/0 input> {
+  import Helpers<input/0>
 
   int diff(int i, int j) { result = grid(i, j) - grid(i, j + 1) }
 
@@ -87,9 +92,5 @@ module Impl<inputSig/1 input> {
 
   int safeCount3() { result = count(int i | isSafe3(i)) }
 }
-
-module TestImpl = Impl<testDay2/1>;
-
-module RealImpl = Impl<realDay2/1>;
 
 select 1
