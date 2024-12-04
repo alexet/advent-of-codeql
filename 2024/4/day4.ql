@@ -39,4 +39,4 @@ module TestImpl = Impl<testDay4/1>;
 
 module RealImpl = Impl<realDay4/1>;
 
-select 1
+select RealImpl::xmasCount(), RealImpl::xmasCount2()
