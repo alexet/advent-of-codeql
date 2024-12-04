@@ -9,17 +9,19 @@ module Impl<inputSig/1 input> {
 
   string chars(int x, int y) { result = line(x).charAt(y) }
 
+  bindingset[i]
   string wordCharAt(int x, int y, Dir8 dir, int i) {
-    i in [0 .. 3] and
     result = chars(x + dir.dx() * i, y + dir.dy() * i)
   }
 
-  string wordAt(int x, int y, Dir8 dir) {
-    forall(int i | i in [0 .. 3] | exists(wordCharAt(x, y, dir, i))) and
-    result = strictconcat(int i | i in [0 .. 3] | wordCharAt(x, y, dir, i) order by i)
+  predicate xmasAt(int x, int y, Dir8 dir) {
+    wordCharAt(x, y, dir, 0) = "X" and
+    wordCharAt(x, y, dir, 1) = "M" and
+    wordCharAt(x, y, dir, 2) = "A" and
+    wordCharAt(x, y, dir, 3) = "S" 
   }
 
-  int xmasCount() { result = count(int x, int y, Dir8 dir | wordAt(x, y, dir) = "XMAS") }
+  int xmasCount() { result = count(int x, int y, Dir8 dir | xmasAt(x, y, dir)) }
 
   string msAt(int x, int y) {
     result = chars(x, y) and
