@@ -102,3 +102,37 @@ class Dir4 extends Dir8 {
     result.rotateLeft90() = this
   }
 }
+
+signature module IntMaxInput {
+  class Key;
+  predicate range(Key key, int start, int end);
+  int getWeight(Key key, int i);
+}
+
+module ComputeMaxOverRange<IntMaxInput Input> {
+  class Key = Input::Key;
+  private predicate nonEmptyRange(Key key, int start, int end) {
+    start < end and
+    Input::range(key, start, end)
+  }
+
+  int maxUpTo(Key key, int i) {
+    exists(int start, int end | nonEmptyRange(key, start, end) |
+      i = start and result = i
+      or
+      i <= end and
+      exists (int prevMax |
+        maxUpTo(key, i-1) = prevMax |
+        Input::getWeight(key, i) > Input::getWeight(key, prevMax) and
+        result = i
+        or
+        Input::getWeight(key, i) <= Input::getWeight(key, prevMax) and
+        result = prevMax
+      )
+    )
+  }
+
+  int getMax(Key key) {
+    exists(int end | nonEmptyRange(key, _, end) | result = maxUpTo(key, end))
+  }
+}
