@@ -12,6 +12,7 @@ module Helpers<inputSig/0 input> {
   }
 
   int grid(int i, int j) { result = line(i).splitAt(" ", j).toInt() }
+  string charGrid(int x, int y) { result = line(y).charAt(x) }
 }
 
 newtype TDir8 =
@@ -57,5 +58,47 @@ class Dir8 extends TDir8 {
     this = [S().(Dir8), SW().(Dir8), SE().(Dir8)] and result = 1
     or
     this = [E().(Dir8), W().(Dir8)] and result = 0
+  }
+
+  Dir8 rotateLeft90() {
+    this = N() and result = W()
+    or
+    this = W() and result = S()
+    or
+    this = S() and result = E()
+    or
+    this = E() and result = N()
+    or
+    this = NE() and result = NW()
+    or
+    this = NW() and result = SW()
+    or
+    this = SW() and result = SE()
+    or
+    this = SE() and result = NE()
+  }
+
+  Dir8 rotateRight90() {
+    result.rotateLeft90() = this
+  }
+}
+
+class Dir4 extends Dir8 {
+  Dir4() {
+    this = N()
+    or
+    this = S()
+    or
+    this = E()
+    or
+    this = W()
+  }
+
+  override Dir4 rotateLeft90() {
+    result = super.rotateLeft90()
+  }
+
+  override Dir4 rotateRight90() {
+    result.rotateLeft90() = this
   }
 }
