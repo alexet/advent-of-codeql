@@ -97,6 +97,7 @@ module Impl<inputSig/0 input> {
   }
 
   language[monotonicAggregates]
+  pragma[nomagic]
   int bestLoc(int i) {
     result =
       min(int j |
@@ -117,11 +118,12 @@ module Impl<inputSig/0 input> {
 
   cached
   int fileIdForBlank(int blankId, int blankOrder) {
-    result = fileIdForBlankInner(blankId, blankOrder) and
-    adjPriority(blankId, blankOrder, result) != -1
+    adjPriority(blankId, blankOrder, result) != -1 and
+    result = fileIdForBlankInner(blankId, blankOrder)
   }
 
   language[monotonicAggregates]
+  pragma[nomagic]
   int fileIdForBlankInner(int blankId, int blankOrder) {
     iter(blankId, blankOrder) and
     result =
@@ -170,21 +172,19 @@ module Impl<inputSig/0 input> {
 
   predicate blankDone(int blankId, int blankOrder) {
     iter(blankId, blankOrder) and
-    not exists(int fileId |
-      blankId < fileId and
-      fileId in [0 .. maxId()] and
-      not adjPriority(blankId, blankOrder, fileId) = -1
-    )
+    adjPriority(blankId, blankOrder, fileIdForBlankInner(blankId, blankOrder)) = -1
   }
 
   pragma[noinline]
   predicate iter(int blankId, int blankOrder) { exists(priority(blankId, blankOrder, _)) }
 
+  pragma[noinline]
   int adjPriority(int blankId, int blankOrder, int fileId) {
     emptyLengths(blankId, blankOrder) >= fileLengths(fileId) and
-    result = priority(blankId, blankOrder, fileId) + 1
+    result = priority(blankId, blankOrder, fileId)
     or
     emptyLengths(blankId, blankOrder) < fileLengths(fileId) and
+    exists(priority(blankId, blankOrder, fileId)) and
     result = -1
   }
 
@@ -199,6 +199,11 @@ module Impl<inputSig/0 input> {
     not exists(fileIdForBlank(blankId, blankOrder))
   }
 
+  predicate confused3(int blankId, int blankOrder) {
+    strictcount(fileIdForBlank(blankId, blankOrder)) >= 2
+  }
+
+  cached
   int priority(int blankId, int blankOrder, int fileId) {
     (
       blankId = 0 and blankOrder = 0 and result = fileId and exists(fileLengths(fileId))
@@ -207,21 +212,23 @@ module Impl<inputSig/0 input> {
         blankOrder = 0 and
         prevBlankId = blankId - 1 and
         blankDone(prevBlankId, prevBlankOrder) and
-        exists(emptyLengths(blankId))
+        result = priority(prevBlankId, prevBlankOrder, fileId)
         or
         prevBlankId = blankId and
         prevBlankOrder = blankOrder - 1 and
-        exists(fileIdForBlank(prevBlankId, prevBlankOrder))
-      |
-        fileIdForBlank(prevBlankId, prevBlankOrder) = fileId and result = -1
-        or
-        fileIdForBlank(prevBlankId, prevBlankOrder) != fileId and
-        result = priority(prevBlankId, prevBlankOrder, fileId)
-        or
-        blankDone(prevBlankId, prevBlankOrder) and
-        result = priority(prevBlankId, prevBlankOrder, fileId)
+        (
+          fileIdForBlank(prevBlankId, prevBlankOrder) = fileId and result = -1
+          or
+          fileIdForBlank(prevBlankId, prevBlankOrder) != fileId and
+          result = priority(prevBlankId, prevBlankOrder, fileId)
+        )
       )
-    )
+    ) and
+    blankId < 7000
+  }
+
+  predicate doublePriorityErr(int blankId, int blankOrder, int fileId) {
+    strictcount(adjPriority(blankId, blankOrder, fileId)) > 1
   }
 
   int files(int i) {
@@ -263,4 +270,4 @@ module Impl<inputSig/0 input> {
   }
 }
 
-select 1
+select RealImpl::checksum2().toString()
