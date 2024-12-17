@@ -101,6 +101,16 @@ class Dir4 extends Dir8 {
   override Dir4 rotateRight90() {
     result.rotateLeft90() = this
   }
+
+  Dir4 opposite() {
+    this = N() and result = S()
+    or
+    this = S() and result = N()
+    or
+    this = E() and result = W()
+    or
+    this = W() and result = E()
+  }
 }
 
 signature module IntMaxInput {
