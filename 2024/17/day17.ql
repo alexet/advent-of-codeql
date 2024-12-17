@@ -5,8 +5,7 @@ string testData() { result = testData(2024, 17) }
 
 string realData() { result = realData(2024, 17) }
 
-module TestImpl = Impl<testData/0>;
-
+//module TestImpl = Impl<testData/0>;
 module RealImpl = Impl<realData/0>;
 
 module Impl<inputSig/0 input> {
@@ -61,16 +60,6 @@ module Impl<inputSig/0 input> {
     operand = 7 and result = "E"
   }
 
-  /**
-   * b = a % 8
-   * b = b ^ 2
-   * c = a / 2^b
-   * b = b^3
-   * b = b^c
-   * out b
-   * a = a/8
-   * if a != 0 goto start
-   */
   string printCode() {
     result =
       concat(int i |
@@ -114,7 +103,7 @@ module Impl<inputSig/0 input> {
       or
       op = 2 and
       a = aPrev and
-      b = bPrev % 8 and
+      b = comboOperand % 8 and
       c = cPrev and
       ip = prevIP + 2
       or
@@ -184,6 +173,68 @@ module Impl<inputSig/0 input> {
 
   string rawOutString() {
     result = concat(int iter | | rawOutputAt(iter).toString(), "," order by iter)
+  }
+}
+
+module RealSim {
+  class BigInt = QlBuiltins::BigInt;
+  /**
+   * b = a % 8
+   * b = b ^ 2
+   * c = a / 2^b
+   * b = b^3
+   * b = b^c
+   * out b
+   * a = a/8
+   * if a != 0 goto start
+   */
+  BigInt iter(int iter, int out) {
+    iter = 0 and result = 64584136.toBigInt() and out = -1
+    or
+    exists(BigInt prevA |
+      prevA = iter(iter - 1, _) and
+      prevA != 0.toBigInt() and
+      out = peformIter(prevA, result)
+    )
+    
+  }
+
+  bindingset[prevA]
+  int peformIter(BigInt prevA, BigInt nextA) {
+    exists(BigInt b1, BigInt b2, BigInt b3, BigInt b4, BigInt c |
+      prevA != 0.toBigInt() and
+      b1 = prevA % 8.toBigInt() and
+      b2 = b1.bitXor(2.toBigInt()) and
+      c = prevA/ (1.bitShiftLeft(b2.toInt()).toBigInt()) and
+      b3 = b2.bitXor(3.toBigInt()) and
+      b4 = b3.bitXor(c) and
+      result = (b4 % 8.toBigInt()).toInt() and
+      nextA = prevA / 8.toBigInt()
+    )
+  }
+
+  /*
+   * i  o r         prevA       1 2 3 4         c
+   * 1	0	8,073,017	64,584,136	0	2	1	16,146,032	16,146,034
+   */
+
+  int target(int iter) { result = "2,4,1,2,7,5,1,3,4,3,5,5,0,3,3,0".splitAt(",", iter).toInt() }
+
+  int iterCount() { result = max(int i | exists(target(i))) }
+
+  int inverseTarget(int iter) { result = target(iterCount() - iter) }
+
+  BigInt reverseSearch(int iter) {
+    exists(int target, BigInt prev |
+      target = inverseTarget(iter) and
+      (
+        iter = 0 and prev = 0.toBigInt()
+        or
+        prev = reverseSearch(iter - 1)
+      ) and
+      result = ((prev * 8.toBigInt()) + [0 .. 7].toBigInt()) and
+      target = peformIter(result, prev)
+    )
   }
 }
 
