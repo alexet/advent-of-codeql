@@ -3,4 +3,4 @@ library: false
 warnOnImplicitThis: false
 name: alexet/advent-of-code
 version: 1.0.0
-dataExtensions: "*/*/*.yml"
+dataExtensions: ["*/*/*.yml", "everybody_codes/*/*/*.yml"]
