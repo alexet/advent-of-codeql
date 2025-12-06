@@ -15,6 +15,8 @@ module Helpers<inputSig/0 input> {
   string charGrid(int x, int y) { result = line(y).charAt(x) }
 }
 
+class BigInt = QlBuiltins::BigInt;
+
 newtype TDir8 =
   N() or
   S() or
