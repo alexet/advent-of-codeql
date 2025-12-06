@@ -15,6 +15,12 @@ module Helpers<inputSig/0 input> {
   string charGrid(int x, int y) { result = line(y).charAt(x) }
 }
 
+int boolToInt(boolean b) {
+  b = true and result = 1
+  or
+  b = false and result = 0
+}
+
 class BigInt = QlBuiltins::BigInt;
 
 newtype TDir8 =
